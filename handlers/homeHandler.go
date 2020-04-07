@@ -6,6 +6,8 @@ import (
 )
 
 // HomeHandler asdfasdf
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Welcome home!")
+func HomeHandler() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Welcome home!")
+	}
 }

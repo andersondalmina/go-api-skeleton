@@ -9,7 +9,8 @@ import (
 	"github.com/gorilla/context"
 )
 
-const tokenKey = "token"
+const contextTokenKey = "tokenKey"
+const contextUserIDKey = "userIDKey"
 
 // AuthenticateMiddleware valida o token e filtra usuários não logados corretamente
 func AuthenticateMiddleware(jwtm *security.JWTManager) func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
@@ -28,7 +29,8 @@ func AuthenticateMiddleware(jwtm *security.JWTManager) func(w http.ResponseWrite
 			return
 		}
 
-		context.Set(r, tokenKey, t)
+		context.Set(r, contextTokenKey, t.Token)
+		context.Set(r, contextUserIDKey, t.UserID)
 		next(w, r)
 		context.Clear(r)
 	}

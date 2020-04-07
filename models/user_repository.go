@@ -34,7 +34,7 @@ func (r *UserRepository) CreateUser(u User) (User, error) {
 	}
 	res, err := collection.InsertOne(ctx, bson)
 
-	u.ID = res.InsertedID.(primitive.ObjectID).String()
+	u.ID = res.InsertedID.(primitive.ObjectID).Hex()
 
 	return u, err
 }
@@ -46,6 +46,25 @@ func (r *UserRepository) GetUserByEmail(email string) (User, error) {
 
 	filter := bson.M{
 		"email": email,
+	}
+
+	var u User
+	err := collection.FindOne(ctx, filter).Decode(&u)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return u, err
+}
+
+// GetUserByID search for an user by the given ID
+func (r *UserRepository) GetUserByID(id string) (User, error) {
+	collection := r.database.Database("api").Collection("users")
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+
+	objectID, _ := primitive.ObjectIDFromHex(id)
+	filter := bson.M{
+		"_id": objectID,
 	}
 
 	var u User

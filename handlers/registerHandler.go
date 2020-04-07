@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"log"
 	"net/http"
 
@@ -8,8 +9,13 @@ import (
 	"github.com/andersondalmina/go-api-skeleton/security"
 )
 
+type returnRegisterJSON struct {
+	Token string      `json:"token"`
+	User  models.User `json:"user"`
+}
+
 // RegisterHandler asdfasd
-func RegisterHandler(userRepository models.UserRepositoryInterface) func(w http.ResponseWriter, r *http.Request) {
+func RegisterHandler(userRepository models.UserRepositoryInterface, jwtm *security.JWTManager) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var bodyVars struct {
 			Name     string
@@ -34,11 +40,24 @@ func RegisterHandler(userRepository models.UserRepositoryInterface) func(w http.
 			Password: password,
 		}
 
-		u, err = userRepository.CreateUser(u)
+		user, err := userRepository.CreateUser(u)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		HandleHTTPSuccess(w, map[string]string{"id": u.ID})
+		token, err := jwtm.GenerateToken(user.ID)
+		if err != nil {
+			HandleHTTPError(w, http.StatusInternalServerError, errors.New("Error while Signing Token"))
+			return
+		}
+
+		HandleHTTPSuccess(w, returnRegisterJSON{
+			Token: token,
+			User: models.User{
+				ID:    user.ID,
+				Name:  user.Name,
+				Email: user.Email,
+			},
+		})
 	}
 }

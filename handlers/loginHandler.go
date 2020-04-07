@@ -8,9 +8,9 @@ import (
 	"github.com/andersondalmina/go-api-skeleton/security"
 )
 
-type returnJSON struct {
-	User  models.User
-	Token string
+type returnLoginJSON struct {
+	User  models.User `json:"user"`
+	Token string      `json:"token"`
 }
 
 // LoginHandler asdfasd
@@ -45,11 +45,13 @@ func LoginHandler(userRepository models.UserRepositoryInterface, jwtm *security.
 			return
 		}
 
-		json := returnJSON{
+		HandleHTTPSuccess(w, returnLoginJSON{
 			Token: token,
-			User:  user,
-		}
-
-		HandleHTTPSuccess(w, json)
+			User: models.User{
+				ID:    user.ID,
+				Name:  user.Name,
+				Email: user.Email,
+			},
+		})
 	}
 }
