@@ -29,10 +29,10 @@ func Handlers() *mux.Router {
 	v1Router.HandleFunc("/register", handlers.RegisterHandler(uR, jwtm)).Methods("POST")
 
 	// Authenticated routes
-	authenticateMiddleware := negroni.New()
-	authenticateMiddleware.UseFunc(handlers.AuthenticateMiddleware(jwtm))
+	verifyAuthenticationHandler := negroni.New()
+	verifyAuthenticationHandler.UseFunc(handlers.VerifyAuthenticationHandler(jwtm))
 
-	v1Router.Path("/profile").Handler(authenticateMiddleware.With(
+	v1Router.Path("/profile").Handler(verifyAuthenticationHandler.With(
 		negroni.WrapFunc(handlers.ProfileHandler(uR)),
 	)).Methods("GET")
 

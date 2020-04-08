@@ -9,11 +9,14 @@ import (
 	"github.com/gorilla/context"
 )
 
+// contextTokenKey name of the key where token will be stored in context
 const contextTokenKey = "tokenKey"
+
+// contextUserIDKey name of the key where userID will be stored in context
 const contextUserIDKey = "userIDKey"
 
-// AuthenticateMiddleware valida o token e filtra usuários não logados corretamente
-func AuthenticateMiddleware(jwtm *security.JWTManager) func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+// VerifyAuthenticationHandler valida o token e filtra usuários não logados corretamente
+func VerifyAuthenticationHandler(jwtm *security.JWTManager) func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	return func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 		token := r.Header.Get("Authorization")
 		if token == "" {

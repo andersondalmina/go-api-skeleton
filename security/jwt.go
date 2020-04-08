@@ -79,7 +79,6 @@ func (m *JWTManager) ValidateToken(tokenString string) (*Token, error) {
 			case jwt.ValidationErrorExpired:
 				return nil, errors.New("Token Expired, get a new one")
 			default:
-				log.Printf("[INFO][Auth Middleware] %s", vErr.Error())
 				return nil, errors.New("JWT Token ValidationError")
 			}
 		}
